@@ -1,3 +1,4 @@
+import logging
 import tkinter as tk
 from collections import defaultdict
 from collections.abc import Callable
@@ -5,6 +6,12 @@ from enum import Enum
 from tkinter import TOP, LEFT, RIGHT, BOTTOM
 from typing import List
 
+from audio_api_2 import Recorder
+from utils import init_logger
+
+init_logger()
+
+logger = logging.getLogger(__name__)
 
 class UIEvent(Enum):
     INIT = "init"
@@ -12,16 +19,18 @@ class UIEvent(Enum):
     RECORD_ENDED = "record_ended",
     PLAY_PRESSED = "play_pressed",
     PLAY_ENDED = "play_ended",
+    PLAY_NEAR_EOS = "play_near_eos",
     NEXT_PRESSED = "next_pressed",
     NAME_STARTED = "name_started",
     NAME_ENDED = "name_ended"
 
 
 class UIState(Enum):
-    INIT = "init",
-    READY = "ready",
-    RECORDING = "recording",
+    INIT = "init"
+    READY = "ready"
+    RECORDING = "recording"
     PLAYING = "playing"
+    MONITORING = "monitoring"
     ANNOUNCING = "announcing"
 
 
@@ -52,6 +61,7 @@ class StateMachine:
     def execute(self, event: UIEvent):
         for t in self.transitions[self.current_state]:
             if t.event == event:
+                logger.debug(f"state update: {self.current_state} => {t.target}")
                 prev_state = self.current_state
                 self.current_state = t.target
                 if isinstance(t.action, list):
@@ -59,6 +69,7 @@ class StateMachine:
                         action(prev_state, t.target)
                 else:
                     t.action(prev_state, t.target)
+                logger.debug(f"state updated.")
                 return
 
 state_machine = StateMachine()
@@ -101,29 +112,57 @@ class UIControls:
         self.r.mainloop()
 
 ui = UIControls()
+rec = Recorder(eos_cb=lambda: state_machine.execute(UIEvent.PLAY_NEAR_EOS))
+files = []
 
 def build_ui(_current_state: UIState, _next_state: UIState):
     ui.create()
 
 def start_recording(current_state: UIState, next_state: UIState):
+    logger.debug("start_recording()")
+
     ui.rec_box.config(background="blue")
     ui.rec_button.config(text="Recording")
     ui.rec_timer = ui.r.after(5000, lambda: state_machine.execute(UIEvent.RECORD_ENDED))
+    rec.start_recording()
 
 def stop_recording(current_state: UIState, next_state: UIState):
+    logger.debug("stop_recording()")
+
     ui.rec_box.config(background="green")
     ui.rec_button.config(text="Record")
-    ui.r.after_cancel(ui.rec_timer)
+    if ui.rec_timer:
+        ui.r.after_cancel(ui.rec_timer)
+        ui.rec_timer = None
+    file_path = rec.stop_recording()
+    files.append(file_path)
 
 def start_playing(current_state: UIState, next_state: UIState):
+    logger.debug("start_playing")
+
     ui.play_box.config(background="blue")
     ui.play_button.config(text="Playing")
-    ui.play_timer = ui.r.after(5000, lambda: state_machine.execute(UIEvent.PLAY_PRESSED))
+    # ui.play_timer = ui.r.after(5000, lambda: state_machine.execute(UIEvent.PLAY_PRESSED))
+    rec.start_playback(files[-1])
 
 def stop_playing(current_state: UIState, next_state: UIState):
+    logger.debug("stop_playing")
+
     ui.play_box.config(background="green")
     ui.play_button.config(text="Play")
-    ui.r.after_cancel(ui.play_timer)
+    rec.stop_playback()
+    if ui.play_timer:
+        ui.r.after_cancel(ui.play_timer)
+        ui.play_timer = None
+
+def monitor_playing(current_state: UIState, next_state: UIState):
+    logger.debug("monitor_playback")
+    if not rec.check_playback():
+        logger.debug("stream ended")
+        state_machine.execute(UIEvent.PLAY_ENDED)
+    else:
+        logger.debug("scheduling another monitor")
+        ui.play_timer = ui.r.after(100, lambda: monitor_playing(current_state, next_state))
 
 def main():
     transitions = [
@@ -138,9 +177,10 @@ def main():
                    [stop_recording, start_playing]),
 
         Transition(UIState.PLAYING, UIEvent.PLAY_PRESSED, UIState.READY, stop_playing),
-        Transition(UIState.PLAYING, UIEvent.PLAY_ENDED, UIState.READY, stop_playing),
         Transition(UIState.PLAYING, UIEvent.RECORD_PRESSED, UIState.RECORDING,
                    [stop_playing, start_recording]),
+        Transition(UIState.PLAYING, UIEvent.PLAY_NEAR_EOS, UIState.MONITORING, monitor_playing),
+        Transition(UIState.MONITORING, UIEvent.PLAY_ENDED, UIState.READY, stop_playing),
 
         # Transition(UIState.READY, UIEvent.PLAY_PRESSED, UIState.PLAYING, start_playing),
         # Transition(UIState.READY, UIEvent.PLAY_ENDED, UIState.READY, stop_playing),
