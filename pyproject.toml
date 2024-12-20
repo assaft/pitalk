@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pitalk"
+#version = "0.0.1"
+authors = [
+    {name = "Assaf Toledo", email = "assaftl.net@gmail.com"}
+]
+description = "P2P Voice Messages for Raspberry PI"
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["p2p", "raspberry", "pi", "voice", "message"]
+license = {text = "Apache License (2.0)"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "numpy",
+    "pyaudio",
+    "readchar"
+]
+dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/assaft/pitalk"
+
+[project.scripts]
+pitalk_mac = "pitalk.pitalk_mac_tkinter:main"

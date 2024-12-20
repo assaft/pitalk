@@ -1,76 +1,14 @@
 import logging
 import tkinter as tk
-from collections import defaultdict
-from collections.abc import Callable
-from enum import Enum
 from tkinter import TOP, LEFT, RIGHT, BOTTOM
-from typing import List
 
 from audio_api_2 import Recorder
+from state_machine import UIEvent, UIState, Transition, StateMachine
 from utils import init_logger
 
 init_logger()
 
 logger = logging.getLogger(__name__)
-
-class UIEvent(Enum):
-    INIT = "init"
-    RECORD_PRESSED = "record_pressed",
-    RECORD_ENDED = "record_ended",
-    PLAY_PRESSED = "play_pressed",
-    PLAY_ENDED = "play_ended",
-    PLAY_NEAR_EOS = "play_near_eos",
-    NEXT_PRESSED = "next_pressed",
-    NAME_STARTED = "name_started",
-    NAME_ENDED = "name_ended"
-
-
-class UIState(Enum):
-    INIT = "init"
-    READY = "ready"
-    RECORDING = "recording"
-    PLAYING = "playing"
-    MONITORING = "monitoring"
-    ANNOUNCING = "announcing"
-
-
-Action = Callable[[UIState, UIState], None]
-
-
-class Transition:
-
-    def __init__(self, source: UIState, event: UIEvent,
-                 target: UIState, action: Action | List[Action]):
-        self.source = source
-        self.target = target
-        self.action = action
-        self.event = event
-
-
-class StateMachine:
-
-    def __init__(self):
-        self.current_state = None
-        self.transitions = defaultdict(list)
-
-    def create(self, start: UIState, transitions: List[Transition]):
-        self.current_state = start
-        for t in transitions:
-            self.transitions[t.source].append(t)
-
-    def execute(self, event: UIEvent):
-        for t in self.transitions[self.current_state]:
-            if t.event == event:
-                logger.debug(f"state update: {self.current_state} => {t.target}")
-                prev_state = self.current_state
-                self.current_state = t.target
-                if isinstance(t.action, list):
-                    for action in t.action:
-                        action(prev_state, t.target)
-                else:
-                    t.action(prev_state, t.target)
-                logger.debug(f"state updated.")
-                return
 
 state_machine = StateMachine()
 
@@ -105,7 +43,7 @@ class UIControls:
         self.play_box = tk.Text(self.r, background="green", width=20, height=10)
         self.play_box.pack(in_=play_frame, side=TOP)
         self.play_button = tk.Button(self.r, text='Play', width=25,
-                                    command=lambda: state_machine.execute(
+                                     command=lambda: state_machine.execute(
                                         event=UIEvent.PLAY_PRESSED))
         self.play_button.pack(in_=play_frame, side=BOTTOM)
 
