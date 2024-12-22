@@ -24,7 +24,9 @@ classifiers = [
 dependencies = [
     "numpy",
     "pyaudio",
-    "readchar"
+    "readchar",
+    "pydantic",
+    "rsa"
 ]
 dynamic = ["version"]
 
