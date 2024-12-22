@@ -1,3 +1,4 @@
+import io
 import uuid
 import wave
 from datetime import datetime, timezone
@@ -66,8 +67,10 @@ class PyAudioAPI(AudioAPI):
             self.on_eos() # notify end-of-stream is approaching
         return data, pyaudio.paContinue
 
-    def start_playback(self, file_path: Path):
-        self.wf = wave.open(str(file_path), 'rb')
+    def start_playback(self, file_path: Path | None = None,
+                       wav_data: bytes | None = None):
+        data_pointer = str(file_path) if file_path else io.BytesIO(wav_data)
+        self.wf = wave.open(data_pointer, 'rb')
         self.p = pyaudio.PyAudio()
         self.stream = self.p.open(format=self.p.get_format_from_width(self.wf.getsampwidth()),
                                   channels=self.wf.getnchannels(),

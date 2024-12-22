@@ -17,7 +17,8 @@ class AudioAPI(ABC):
         pass
 
     @abstractmethod
-    def start_playback(self, path: Path):
+    def start_playback(self, path: Path | None = None,
+                       wav_data: bytes | None = None):
         pass
 
     @abstractmethod

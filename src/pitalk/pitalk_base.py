@@ -5,6 +5,7 @@ from typing import Callable, List
 
 from pitalk.audio_api.audio_api_base import AudioAPI
 from pitalk.ui_mainloop_api.ui_mainloop_api_base import UIMainLoopAPI
+from pitalk.user_api import User
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ class UIEvent(Enum):
     PLAY_ENDED = "play_ended",
     PLAY_NEAR_EOS = "play_near_eos",
     NEXT_PRESSED = "next_pressed",
+    PREV_PRESSED = "prev_pressed",
     NAME_STARTED = "name_started",
     NAME_ENDED = "name_ended"
 
@@ -70,17 +72,24 @@ class StateMachine:
 
 class PITalk:
 
-    def __init__(self, ui_mainloop_api: UIMainLoopAPI, audio_api: AudioAPI):
+    def __init__(self, ui_mainloop_api: UIMainLoopAPI, audio_api: AudioAPI, user_name: str):
         self.ui_mainloop_api = ui_mainloop_api
         self.audio_api = audio_api
         self.file_path = None
         self.state_machine = StateMachine()
+        self.user_name = user_name
+        self.user = User(user_name)
+        self.friend_id = 0
 
         transitions = [
             Transition(UIState.INIT, UIEvent.INIT, UIState.READY, self.build_ui),
 
             Transition(UIState.READY, UIEvent.RECORD_PRESSED, UIState.RECORDING, self.start_recording),
             Transition(UIState.READY, UIEvent.PLAY_PRESSED, UIState.PLAYING, self.start_playing),
+            Transition(UIState.READY, UIEvent.NEXT_PRESSED, UIState.PLAYING,
+                       [self.move_next, self.start_announcing]),
+            Transition(UIState.READY, UIEvent.PREV_PRESSED, UIState.PLAYING,
+                       [self.move_previous, self.start_announcing]),
 
             Transition(UIState.RECORDING, UIEvent.RECORD_PRESSED, UIState.READY, self.stop_recording),
             Transition(UIState.RECORDING, UIEvent.RECORD_ENDED, UIState.READY, self.stop_recording),
@@ -96,9 +105,14 @@ class PITalk:
             Transition(UIState.MONITORING, UIEvent.PLAY_NEAR_EOS, UIState.MONITORING, self.monitor_playback),
         ]
 
+
+
+
         self.ui_mainloop_api.set_ui_handlers(
             on_record=lambda: self.state_machine.execute(UIEvent.RECORD_PRESSED),
             on_play=lambda: self.state_machine.execute(UIEvent.PLAY_PRESSED),
+            on_next=lambda: self.state_machine.execute(UIEvent.NEXT_PRESSED),
+            on_prev=lambda: self.state_machine.execute(UIEvent.PREV_PRESSED),
         )
 
         self.audio_api.set_audio_handlers(
@@ -129,7 +143,7 @@ class PITalk:
     def start_playing(self):
         logger.debug("start_playing")
         self.ui_mainloop_api.set_playback(on=True)
-        self.audio_api.start_playback(self.file_path)
+        self.audio_api.start_playback(path=self.file_path)
 
     def stop_playing(self):
         logger.debug("stop_playing")
@@ -144,6 +158,18 @@ class PITalk:
                 100, lambda: self.state_machine.execute(UIEvent.PLAY_NEAR_EOS))
         else:
             self.state_machine.execute(UIEvent.PLAY_ENDED)
+
+    def move_next(self):
+        self.friend_id = (self.friend_id + 1) % len(self.user.friend_list)
+
+    def move_previous(self):
+        self.friend_id = (self.friend_id - 1) % len(self.user.friend_list)
+
+    def start_announcing(self):
+        logger.debug("start_announcing")
+        friend_card = self.user.friend_list[self.friend_id]
+        wav_data = friend_card.announce_data
+        self.audio_api.start_playback(wav_data=wav_data)
 
     def run(self):
         self.state_machine.execute(event=UIEvent.INIT)

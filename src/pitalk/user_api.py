@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 import rsa
-from pydantic import BaseModel
+from pydantic import BaseModel, Base64Bytes
 from rsa import PrivateKey
 
 
@@ -13,7 +13,7 @@ class FriendCard(BaseModel):
     short_name: str
     full_name: str
     public_key: bytes
-    announce_data: bytes
+    announce_data: Base64Bytes
 
 
 class User:

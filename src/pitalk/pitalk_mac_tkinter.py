@@ -7,7 +7,8 @@ from pitalk.utils import init_logger
 def main():
     init_logger()
     pi_talk = PITalk(ui_mainloop_api=TkinterUI(),
-                     audio_api=PyAudioAPI())
+                     audio_api=PyAudioAPI(),
+                     user_name="nelly_t")
     pi_talk.run()
 
 

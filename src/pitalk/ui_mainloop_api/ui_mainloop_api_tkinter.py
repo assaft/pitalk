@@ -9,6 +9,8 @@ class TkinterUI(UIMainLoopAPI):
 
     def __init__(self):
         self.r = None
+        self.next_button = None
+        self.prev_button = None
         self.rec_box = None
         self.rec_button = None
         self.rec_timer = None
@@ -17,21 +19,36 @@ class TkinterUI(UIMainLoopAPI):
         self.play_timer = None
         self.on_record = None
         self.on_play = None
+        self.on_next = None
+        self.on_prev = None
 
-    def set_ui_handlers(self, on_record: Callable[[], None],
-                 on_play: Callable[[], None]):
+    def set_ui_handlers(self,
+                        on_record: Callable[[], None],
+                        on_play: Callable[[], None],
+                        on_next: Callable[[], None],
+                        on_prev: Callable[[], None]):
         self.on_record = on_record
         self.on_play = on_play
+        self.on_next = on_next
+        self.on_prev = on_prev
 
     def build_ui(self):
         self.r = tk.Tk()
         self.r.title('PiTalk GUI')
+
+        nav_frame = tk.Frame(self.r)
+        nav_frame.pack(side=LEFT)
 
         rec_frame = tk.Frame(self.r)
         rec_frame.pack(side=LEFT)
 
         play_frame = tk.Frame(self.r)
         play_frame.pack(side=RIGHT)
+
+        self.next_button = tk.Button(self.r, text='Next', width=25, command=self.on_next)
+        self.next_button.pack(in_=nav_frame, side=TOP)
+        self.prev_button = tk.Button(self.r, text='Prev', width=25, command=self.on_prev)
+        self.prev_button.pack(in_=nav_frame, side=BOTTOM)
 
         self.rec_box = tk.Text(self.r, background="green", width=20, height=10)
         self.rec_box.pack(in_=rec_frame, side=TOP)

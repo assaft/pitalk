@@ -7,7 +7,9 @@ class UIMainLoopAPI(ABC):
     @abstractmethod
     def set_ui_handlers(self,
                         on_record: Callable[[], None],
-                        on_play: Callable[[], None]):
+                        on_play: Callable[[], None],
+                        on_next: Callable[[], None],
+                        on_prev: Callable[[], None]):
         pass
 
     @abstractmethod
