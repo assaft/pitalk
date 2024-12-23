@@ -1,8 +1,11 @@
 #!/bin/bash
 set -u
 
-DROPBOX_UPLOADER_PARENT_DIR="${DROPBOX_UPLOADER_PARENT_DIR:=~}"
-cd $DROPBOX_UPLOADER_PARENT_DIR
+if [ -z ${DROPBOX_UPLOADER_PARENT_DIR+x} ]; then
+  cd ~
+else
+  cd $DROPBOX_UPLOADER_PARENT_DIR
+fi
 rm -Rf Dropbox-Uploader
 git clone https://github.com/andreafabrizi/Dropbox-Uploader.git
 cd Dropbox-Uploader
