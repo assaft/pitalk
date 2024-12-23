@@ -26,7 +26,8 @@ dependencies = [
     "pyaudio",
     "readchar",
     "pydantic",
-    "rsa"
+    "rsa",
+    "streamlit"
 ]
 dynamic = ["version"]
 
