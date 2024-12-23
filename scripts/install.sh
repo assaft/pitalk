@@ -10,7 +10,7 @@ rm -Rf Dropbox-Uploader
 git clone https://github.com/andreafabrizi/Dropbox-Uploader.git
 cd Dropbox-Uploader
 
-./dropbox_uploader
+./dropbox_uploader.sh
 
 #rm -f ~/.dropbox_uploader
 #echo "CONFIGFILE_VERSION=2.0" >> ~/.dropbox_uploader
