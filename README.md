@@ -1,6 +1,5 @@
 # pitalk
-PiTalk is a peer-to-peer voice messagenger for Raspberry PI (tested with Pi 2 W). 
-PiTalk installation involes 1+N devices:
+PiTalk is a peer-to-peer voice messanger running on Raspberry PI. PiTalk installation involes 1+N devices:
 * First is the Admin machine
 * Then there are N end-user devices for communicating with each other.
 PiTalk was developed and tested on Raspberry PI Zero 2 W, however it is likely to work on other Pi versions. 
