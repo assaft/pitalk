@@ -11,11 +11,17 @@ PiTalk was developed and tested on Raspberry PI Zero 2 W, however it is likely t
 
 ### Software Installation
 * Use the Raspberry PI Imager (tested with v1.8.5) to install Raspberry PI OS Lite (64-bit) on a Class 10 A1 32GB card (or better spec-ed). For easy access, pre-configure wifi + user: pitalk_admin.
-* ssh pitalk_admin@1<ip>
-* sudo apt -y install git
-* git clone https://github.com/assaft/pitalk.git
-* cd pitalk
-* ./scripts/install_admin.sh
+* SSH into the pi:
+```bash
+ssh pitalk_admin@PI-IP
+```
+* Install deps and pitalk
+```
+sudo apt -y install git
+git clone https://github.com/assaft/pitalk.git
+cd pitalk
+./scripts/install_admin.sh
+```
 
 ### Create users
 Repeat the process below for each user:
@@ -88,11 +94,17 @@ python preprare/users/cancel_friendship.py john_smith jane_doe
 ### Software Installation
 
 * Use the Raspberry PI Imager (tested with v1.8.5) to install Raspberry PI OS Lite (64-bit) on a Class 10 A1 32GB card (or better spec-ed). For easy access, pre-configure wifi + user (pitalk).
-* ssh pitalk@1<ip>
-* sudo apt -y install git
+* SSH into the pi:
+```bash
+ssh pitalk@PI-IP
+```
+* Install pitalk and its dependencies
+```bash
+sudo apt -y install git
 * git clone https://github.com/assaft/pitalk.git
 * cd pitalk
 * ./scripts/install_user.sh
+```
 
 ## I2S Audio
 
