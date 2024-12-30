@@ -99,3 +99,88 @@ Follow this tutorial:
 * By [Adafruit](https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp/raspberry-pi-wiring), notice the table of contents on the left hand side to jump to other sections.
 
 Note that [this](https://www.lucadentella.it/en/2017/04/26/raspberry-pi-zero-audio-output-via-i2s/) is not up-to-date, and contains a mistake: instead of PIN18, 19, 21, it needs to be GPIO 18, 19, 21. Adafruit got it right [here](https://learn.adafruit.com/assets/37880).
+
+
+
+PITALK_HOME = ~/pitalk
+DROPBOX_HOME = ~/dropbox
+
+Step 1 - on user hardware:
+A. create a new user by the python script
+
+PITALK_HOME:
+             /prepare
+                /user_x
+                    /keys
+                        /rsa_private.txt
+                        /rsa_public.txt
+                    /card
+                        /user_x.json
+             /src/pitalk
+             ...
+
+B. copy/add the user pubic key and card to dropbox 
+
+DROPBOX_HOME:
+            /users
+                /user_x
+                    /keys
+                        /rsa_public.txt
+                    /card
+                        /user_x.json
+
+Step 2 - On the Admin hardware:
+
+A. Sync to the most up-to-date users directory:
+
+DROPBOX_HOME:
+            /users
+                /user_x
+                    /keys
+                        /rsa_public.txt
+                    /card
+                        /user_x.json
+                /user_y
+                    /keys
+                        /rsa_public.txt
+                    /card
+                        /user_y.json
+                /user_z
+                    /keys
+                        /rsa_public.txt
+                    /card
+                        /user_z.json
+
+B. Add friend cards to create friendships:
+            /users
+                /user_x
+                    /keys
+                        /rsa_public.txt
+                    /card
+                        /user_x.json
+                    /friends
+                        /user_y.json
+                        /user_z.json
+                /user_y
+                    /keys
+                        /rsa_public.txt
+                    /card
+                        /user_y.json
+                    /friends 
+                        /user_x.json           
+                /user_z
+                    /keys
+                        /rsa_public.txt
+                    /card
+                        /user_z.json
+                    /friends 
+                        /user_x.json           
+
+
+Stage 3 - Back on the user hardware:
+
+Run pitalk
+
+It will sync on the friends list for the active user
+It will let you send messages to its friends
+It will play messages you receive from friends
