@@ -16,10 +16,10 @@ alma_by = User.create_user(
     user_name="alma_by", full_name="Alma Basson-Yovel",
     announce_path=announce_path / "alma_by.wav")
 
-gili_b = User.create_user(
-    user_name="gili_b", full_name="Gili Basson",
-    announce_path=announce_path / "gili_b.wav")
+# gili_b = User.create_user(
+#     user_name="gili_b", full_name="Gili Basson",
+#     announce_path=announce_path / "gili_b.wav")
 
 User.make_friends("nelly_t", "zoey_t")
 User.make_friends("nelly_t", "alma_by")
-User.make_friends("zoey_t", "gili_b")
+User.make_friends("zoey_t", "alma_by")
