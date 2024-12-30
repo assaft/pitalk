@@ -15,7 +15,7 @@ PiTalk was developed and tested on Raspberry PI Zero 2 W, however it is likely t
 ```bash
 ssh pitalk_admin@PI-IP
 ```
-* Install deps and pitalk
+* Install pitalk and its dependencies:
 ```
 sudo apt -y install git
 git clone https://github.com/assaft/pitalk.git
@@ -101,9 +101,9 @@ ssh pitalk@PI-IP
 * Install pitalk and its dependencies
 ```bash
 sudo apt -y install git
-* git clone https://github.com/assaft/pitalk.git
-* cd pitalk
-* ./scripts/install_user.sh
+git clone https://github.com/assaft/pitalk.git
+cd pitalk
+./scripts/install_user.sh
 ```
 
 ## I2S Audio
