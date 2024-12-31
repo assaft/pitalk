@@ -4,7 +4,6 @@ set -e
 cd $PITALK_HOME
 
 # create a virtual env for pitalk
-pyenv init
 pyenv shell 3.11
 pip install -m venv venv
 pyenv shell --unset 
