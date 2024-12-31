@@ -5,9 +5,19 @@ PiTalk is a peer-to-peer voice messanger running on Raspberry PI. PiTalk install
 
 PiTalk was developed and tested on Raspberry PI Zero 2 W, however it is likely to work on other Pi versions. 
 
-
-
 ## Installation for Admin
+
+### Create a Dropbox Application
+You need to create a dropbox application that will serve for passing messages between users. The instructions below are based on [this)[https://pimylifeup.com/raspberry-pi-dropbox/] guide, with a few updates. You can use any computer to perform this step (not necessarily the Admin machine).
+* Go to [Dropbox developers page](https://www.dropbox.com/developers/apps).
+* Press on `Create app`
+* Select `Scoped access` and then `App folder`
+* Give a name to your app
+* Press `Create app`
+* You may want to change `App folder name`
+* Store the `App key` and `App secret` for later use (press `show` if secret is hidden)
+* Switch to the `Permissions` tab
+* Under `Files and folders`, make sure both `read` and `write` are selected for `files.metadata` and `files.content`
 
 ### Software Installation
 * Use the Raspberry PI Imager (tested with v1.8.5) to install Raspberry PI OS Lite (64-bit) on a Class 10 A1 32GB card (or better spec-ed). For easy access, pre-configure wifi + user: pitalk_admin.
@@ -15,13 +25,14 @@ PiTalk was developed and tested on Raspberry PI Zero 2 W, however it is likely t
 ```bash
 ssh pitalk_admin@PI-IP
 ```
-* Install pitalk and its dependencies:
+* Install pitalk and its dependencies. Note that this includes `Dropbox-Uploader`, which will ask for the `App key` and `App secret` mentioned above. It will also ask you to open a link in your web browser for creating an access token. 
 ```
 sudo apt -y install git
 git clone https://github.com/assaft/pitalk.git
 cd pitalk
 ./scripts/install_admin.sh
 ```
+
 
 ### Create users
 Repeat the process below for each user:
@@ -69,9 +80,6 @@ python preprare/users/cancel_friendship.py john_smith jane_doe
 ```
 
 
-* Define friendships
-
-
 ## Installation for end-users
 
 ### Hardware Installation
@@ -92,19 +100,23 @@ python preprare/users/cancel_friendship.py john_smith jane_doe
 * Attach everything in the Enclosure
 
 ### Software Installation
-
 * Use the Raspberry PI Imager (tested with v1.8.5) to install Raspberry PI OS Lite (64-bit) on a Class 10 A1 32GB card (or better spec-ed). For easy access, pre-configure wifi + user (pitalk).
 * SSH into the pi:
 ```bash
 ssh pitalk@PI-IP
 ```
-* Install pitalk and its dependencies
+* Install pitalk and its dependencies. This process includes some interactive steps:
+    * `Dropbox-Uploader` will ask for the `App key` and `App secret` mentioned above. It will also ask you to open a link in your web browser for creating an access token. 
+    * You will be asked to enter the `user name` and `full name` for the user, and to provide a path to a WAV file announcing his/her name.
 ```bash
 sudo apt -y install git
 git clone https://github.com/assaft/pitalk.git
 cd pitalk
 ./scripts/install_user.sh
 ```
+* At the end of this process, you will be given a path to an RSA public key that was created for this user.
+ 
+
 
 ## I2S Audio
 
