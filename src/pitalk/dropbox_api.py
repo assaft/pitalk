@@ -5,8 +5,8 @@ from uuid import uuid4
 import shutil
 import subprocess
 
-from pitalk.user_api import FriendCard
-from pitalk.user_api import User
+# from pitalk.user_api import FriendCard
+# from pitalk.user_api import User
 
 
 class DropBoxAPI:
@@ -73,16 +73,16 @@ class DropBoxAPI:
         with open(job_file, "w") as f:
             json.dump(job_desc, f, indent=4)
 
-    def add_friend(self, recipient: str, friend_card: FriendCard):
-        friends_path = self.DROPBOX_JOBS / recipient / "friends"
-        friend_card.export(friends_path)
+    # def add_friend(self, recipient: str, friend_card: FriendCard):
+    #     friends_path = self.DROPBOX_JOBS / recipient / "friends"
+    #     friend_card.export(friends_path)
 
-    def send_message(self, recipient: str, file_path: Path):
-        messages_path = self.DROPBOX_JOBS / recipient / "messages"
-        shutil.copyfile(file_path, messages_path)
+    # def send_message(self, recipient: str, file_path: Path):
+    #     messages_path = self.DROPBOX_JOBS / recipient / "messages"
+    #     shutil.copyfile(file_path, messages_path)
 
-    def read_users(self):
-        result = subprocess.run(['./dropbox-uploader.sh', 'download', 'users'],
-                                cwd='~', 
-                                stdout=subprocess.PIPE)
-        print(result.stdout.decode('utf-8'))
+    # def read_users(self):
+    #     result = subprocess.run(['./dropbox-uploader.sh', 'download', 'users'],
+    #                             cwd='~', 
+    #                             stdout=subprocess.PIPE)
+    #     print(result.stdout.decode('utf-8'))
