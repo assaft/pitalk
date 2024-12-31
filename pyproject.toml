@@ -36,3 +36,4 @@ Repository = "https://github.com/assaft/pitalk"
 
 [project.scripts]
 pitalk_mac = "pitalk.pitalk_mac_tkinter:main"
+create_user = "pitalk.management_api.create_user:main"

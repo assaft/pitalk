@@ -22,20 +22,20 @@ class FriendCard(BaseModel):
 
 class User:
 
-    USERS_PATH = Path("users")
+    PITALK_USER_PATH = Path("~/.pitalk/")
 
     def __init__(self, user_name: str | None = None):
         if not user_name:
-            assert len(users := os.listdir(self.USERS_PATH)) == 1
+            assert len(users := os.listdir(self.PITALK_USER_PATH)) == 1
             user_name = users[0]
         self.user_name = user_name
-        user_path = self.USERS_PATH / user_name
+        user_path = self.PITALK_USER_PATH / user_name
         keys_path = user_path / "keys"
-        friend_card_path = user_path / "friend_card"
+        card_path = user_path / "card"
         friends_path = user_path / "friends"
 
         # load the friend card
-        with open(friend_card_path / f"{user_name}.json", "r") as f:
+        with open(card_path / f"{user_name}.json", "r") as f:
             self.friend_card = FriendCard.model_validate_json(f.read())
 
         # load the private key
@@ -50,16 +50,14 @@ class User:
 
     @classmethod
     def create_user(cls, user_name: str, full_name: str, announce_path: Path):
-        user_path = cls.USERS_PATH / user_name
+        user_path = cls.PITALK_USER_PATH / user_name
         keys_path = user_path / "keys"
-        friend_card_path = user_path / "friend_card"
-        friends_path = user_path / "friends"
+        card_path = user_path / "card"
 
-        os.makedirs(cls.USERS_PATH, exist_ok=True)
+        os.makedirs(cls.PITALK_USER_PATH, exist_ok=True)
         os.makedirs(user_path, exist_ok=False)
         os.makedirs(keys_path)
-        os.makedirs(friend_card_path)
-        os.makedirs(friends_path)
+        os.makedirs(card_path)
 
         # create and save keys
         public_key, private_key = rsa.newkeys(512)
@@ -78,11 +76,11 @@ class User:
                                  full_name=full_name,
                                  public_key=public_key.save_pkcs1(),
                                  announce_data=announce_data)
-        friend_card.export(friend_card_path)
+        friend_card.export(card_path)
 
     def add_friend(self, friend_card: FriendCard):
         assert friend_card.user_name not in [f.user_name for f in self.friend_list]
-        friend_card.export(self.USERS_PATH / self.user_name / "friends")
+        friend_card.export(self.PITALK_USER_PATH / self.user_name / "friends")
         self.friend_list.append(friend_card)
 
     def get_friend_card(self):

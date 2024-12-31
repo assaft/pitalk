@@ -1,12 +1,9 @@
 #!/bin/bash
 set -e 
 
-cd $PITALK_HOME
-
 # create a virtual env for pitalk
-pyenv shell 3.11
-pip install -m venv venv
-pyenv shell --unset 
+pyenv local 3.11
+python -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
 
@@ -15,5 +12,3 @@ pip install -e .
 
 # create a user
 create_user
-
-
