@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from uuid import uuid4
 import shutil
@@ -10,16 +11,57 @@ from pitalk.user_api import User
 
 class DropBoxAPI:
 
-    DROPBOX_PATH = Path("dropbox")
+    PITALK_PATH = Path(os.environ["PITALK_HOME"])
+    DROPBOX_PATH = Path(os.environ["DROPBOX_HOME"])
 
-    DROPBOX_USERS = DROPBOX_PATH / "users"
-    DROPBOX_JOBS = DROPBOX_PATH / "jobs"
+    DROPBOX_USERS_DIR = "users"
+
+    DROPBOX_USERS_LOCAL = DROPBOX_PATH / DROPBOX_USERS_DIR
+    DROPBOX_USERS_REMOTE = DROPBOX_USERS_DIR
+
+    DROPBOX_JOBS_LOCAL = DROPBOX_PATH / "jobs"
+
+    DROPBOX_UPLOADER_PATH = Path(os.environ["DROPBOX_HOME"])
+    DROPBOX_UPLOADER_SCRIPT = "dropbox-uploader.sh"
 
     # ADD_FRIEND_JOB = DROPBOX_JOBS / "add_friend"
 
     @staticmethod
     def is_connected() -> bool:
         pass
+
+    def create_users(self):
+        print("before create users")
+        result = subprocess.run([self.DROPBOX_UPLOADER_PATH / 
+                                 self.DROPBOX_UPLOADER_SCRIPT,
+                                 'mkdir', self.DROPBOX_USERS_DIR], 
+                                 cwd=self.PITALK_HOME, stdout=subprocess.PIPE)
+        print("after create users")
+        print(result.stdout.decode('utf-8'))
+  
+
+    def upload_user(self, card_path: Path, user_name: str):
+        print("before upload")
+        params = [self.DROPBOX_UPLOADER_PATH / self.DROPBOX_UPLOADER_SCRIPT,
+                  'upload', card_path, 
+                  self.DROPBOX_PATH / self.DROPBOX_USERS_DIR / user_name]
+        print(params)
+        result = subprocess.run(params, 
+                                cwd=self.PITALK_HOME, 
+                                stdout=subprocess.PIPE)
+        print("after upload")
+        print(result.stdout.decode('utf-8'))
+
+    def download_users(self):
+        print("before download")
+        result = subprocess.run([self.DROPBOX_UPLOADER_PATH / 
+                                 self.DROPBOX_UPLOADER_SCRIPT,
+                                 'download', self.DROPBOX_USERS_DIR, 
+                                 self.DROPBOX_PATH / self.DROPBOX_USERS_DIR], 
+                                 cwd=self.PITALK_HOME, stdout=subprocess.PIPE)
+        
+        print("after download")
+        print(result.stdout.decode('utf-8'))
 
     def create_user(self, user_name: str):
         job_id = uuid4()
@@ -40,3 +82,7 @@ class DropBoxAPI:
         shutil.copyfile(file_path, messages_path)
 
     def read_users(self):
+        result = subprocess.run(['./dropbox-uploader.sh', 'download', 'users'],
+                                cwd='~', 
+                                stdout=subprocess.PIPE)
+        print(result.stdout.decode('utf-8'))

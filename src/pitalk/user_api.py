@@ -8,6 +8,8 @@ import rsa
 from pydantic import BaseModel, Base64Bytes
 from rsa import PrivateKey
 
+from pitalk.dropbox_api import DropBoxAPI
+
 
 class FriendCard(BaseModel):
     user_name: str
@@ -15,14 +17,18 @@ class FriendCard(BaseModel):
     public_key: bytes
     announce_data: Base64Bytes
 
-    def export(self, path: Path):
-        with open(path / f"{self.user_name}.json", "wt") as f:
-            f.write(self.model_dump_json(indent=4))
-
 
 class User:
 
-    PITALK_USER_PATH = Path(os.environ["PITALK_HOME"]) / "user"
+    PITALK_PATH = Path(os.environ["PITALK_HOME"])
+    DROPBOX_PATH = Path(os.environ["DROPBOX_HOME"])
+
+    PITALK_USER_PATH = PITALK_PATH / "user"
+    PREPARE_PATH = PITALK_PATH / "prepare"
+    LOCAL_USER_PATH = PREPARE_PATH / "users"
+
+    DROPBOX_USERS_PATH = DROPBOX_PATH / "users"
+
 
     def __init__(self, user_name: str | None = None):
         if not user_name:
@@ -72,11 +78,22 @@ class User:
             announce_data = base64.b64encode(announce_data)
 
         # create and save a friend card
-        friend_card = FriendCard(user_name=user_name,
-                                 full_name=full_name,
-                                 public_key=public_key.save_pkcs1(),
-                                 announce_data=announce_data)
-        friend_card.export(card_path)
+        card = FriendCard(user_name=user_name,
+                          full_name=full_name,
+                          public_key=public_key.save_pkcs1(),
+                          announce_data=announce_data)
+        with open(card_path / f"{user_name}.json", "wt") as f:
+            f.write(card.model_dump_json(indent=4))
+
+        # upload to dropbox
+        dropbox_api = DropBoxAPI()
+        dropbox_api.upload_user(card_path=card_path, user_name=user_name)
+        # dropbox_api.download_users(user_name=user_name)
+
+    def create_users():
+        dropbox_api = DropBoxAPI()
+        dropbox_api.create_users()
+
 
     def add_friend(self, friend_card: FriendCard):
         assert friend_card.user_name not in [f.user_name for f in self.friend_list]

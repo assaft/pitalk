@@ -114,8 +114,21 @@ git clone https://github.com/assaft/pitalk.git
 cd pitalk
 ./scripts/install_user.sh
 ```
-* At the end of this process, you will be given a path to an RSA public key that was created for this user.
- 
+* At the end of this process, card and keys will be generated for the user under the directory `prepare`. The card describes the user and includes its public RSA key for encrypting messages directed to this user. The keys are the RSA private and public keys. You should not share the private key (`rsa.key`) with other users. The directory layout is as follows:
+```
+PITALK_HOME:
+             /prepare
+                /user_x
+                    /keys
+                        /rsa.key
+                        /rsa_public.key
+                    /card
+                        /user_x.json
+             /src/pitalk
+             ...
+```
+
+
 
 
 ## I2S Audio
