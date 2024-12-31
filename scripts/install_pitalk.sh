@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e 
+
 cd $PITALK_HOME
 
 # create a virtual env for pitalk
