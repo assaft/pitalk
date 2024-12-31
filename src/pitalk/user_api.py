@@ -22,7 +22,7 @@ class FriendCard(BaseModel):
 
 class User:
 
-    PITALK_USER_PATH = Path("/home/.pitalk/")
+    PITALK_USER_PATH = Path(os.environ("PITALK_HOME")) / "user"
 
     def __init__(self, user_name: str | None = None):
         if not user_name:
@@ -54,8 +54,8 @@ class User:
         keys_path = user_path / "keys"
         card_path = user_path / "card"
 
-        os.makedirs(cls.PITALK_USER_PATH, exist_ok=True)
-        os.makedirs(user_path, exist_ok=False)
+        os.makedirs(cls.PITALK_USER_PATH)
+        os.makedirs(user_path)
         os.makedirs(keys_path)
         os.makedirs(card_path)
 
