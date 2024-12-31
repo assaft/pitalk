@@ -22,7 +22,7 @@ class FriendCard(BaseModel):
 
 class User:
 
-    PITALK_USER_PATH = Path(os.environ("PITALK_HOME")) / "user"
+    PITALK_USER_PATH = Path(os.environ["PITALK_HOME"]) / "user"
 
     def __init__(self, user_name: str | None = None):
         if not user_name:
