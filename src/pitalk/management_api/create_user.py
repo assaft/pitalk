@@ -1,7 +1,7 @@
 import os
 import re
 
-from pitalk.user_api import User
+from pitalk import user_api
 
 
 def main():
@@ -28,7 +28,7 @@ def main():
         
     print("Creating user...")
 
-    user = User.create_user(
+    user = user_api.create_user(
         user_name=user_name, full_name=full_name,
         announce_path=announce_path)
 
