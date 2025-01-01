@@ -125,4 +125,5 @@ def create_user(user_name: str, full_name: str, announce_path: Path):
     assert card.full_name == dropbox_card.full_name
     assert card.public_key == dropbox_card.public_key
     assert card.announce_data == dropbox_card.announce_data
-
+    assert card == dropbox_card
+    print("Card uploaded successfully.")
