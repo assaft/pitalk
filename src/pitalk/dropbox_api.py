@@ -39,10 +39,10 @@ class DropBoxAPI:
         print(result.stdout.decode('utf-8'))
   
 
-    def upload_user(self, card_path: Path, user_name: str):
+    def upload_user(self, card_path: Path, card_file: str, user_name: str):
         print("before upload")
-        source_path = card_path
-        target_path = self.DROPBOX_USERS_DIR / user_name
+        source_path = card_path / card_file
+        target_path = self.DROPBOX_USERS_DIR / card_file
         result = subprocess.run([self.DROPBOX_UPLOADER_SCRIPT,
                                  'upload', source_path, target_path], 
                                 cwd=self.PITALK_PATH, 
@@ -50,10 +50,10 @@ class DropBoxAPI:
         print("after upload")
         print(result.stdout.decode('utf-8'))
 
-    def download_user(self, user_name:str) -> Path:
+    def download_user(self, card_file:str) -> Path:
         print("before download")
-        source_path = self.DROPBOX_USERS_DIR / user_name
-        target_path = self.DROPBOX_PATH / self.DROPBOX_USERS_DIR / user_name
+        source_path = self.DROPBOX_USERS_DIR / card_file
+        target_path = self.DROPBOX_PATH / self.DROPBOX_USERS_DIR / card_file
         result = subprocess.run([self.DROPBOX_UPLOADER_SCRIPT,
                                  'download', source_path, target_path], 
                                  cwd=self.PITALK_PATH, stdout=subprocess.PIPE)

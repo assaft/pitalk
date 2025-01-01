@@ -103,21 +103,24 @@ def create_user(user_name: str, full_name: str, announce_path: Path):
                         full_name=full_name,
                         public_key=public_key.save_pkcs1(),
                         announce_data=announce_data)
-    with open(card_path / f"{user_name}.json", "wt") as f:
+    card_file = f"{user_name}.json"
+    with open(card_path / card_file, "wt") as f:
         f.write(card.model_dump_json(indent=4))
 
     # upload to dropbox
     dropbox_api = DropBoxAPI()
-    dropbox_api.upload_user(card_path=card_path, user_name=user_name)
+    dropbox_api.upload_user(card_path=card_path, 
+                            card_file=card_file,
+                            user_name=user_name)
 
     # download for verification
-    dropbox_card_path = dropbox_api.download_user(user_name=user_name)
+    dropbox_card_path = dropbox_api.download_user(card_file=card_file)
     with open(dropbox_card_path / f"{user_name}.json", "rt") as f:
         dropbox_card = FriendCard.model_validate_json(f.read())
 
     print(card.public_key)
     print(dropbox_card.public_key)
-    
+
     assert card.user_name == dropbox_card.user_name
     assert card.full_name == dropbox_card.full_name
     assert card.public_key == dropbox_card.public_key
