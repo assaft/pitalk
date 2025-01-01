@@ -13,6 +13,7 @@ class DropBoxAPI:
 
     PITALK_PATH = Path(os.environ["PITALK_HOME"])
     DROPBOX_PATH = Path(os.environ["DROPBOX_HOME"])
+    DROPBOX_UPLOADER_PATH = Path(os.environ["DROPBOX_UPLOADER_HOME"])
 
     DROPBOX_USERS_DIR = "users"
 
@@ -21,7 +22,6 @@ class DropBoxAPI:
 
     DROPBOX_JOBS_LOCAL = DROPBOX_PATH / "jobs"
 
-    DROPBOX_UPLOADER_PATH = Path(os.environ["DROPBOX_HOME"])
     DROPBOX_UPLOADER_SCRIPT = "dropbox-uploader.sh"
 
     # ADD_FRIEND_JOB = DROPBOX_JOBS / "add_friend"
@@ -35,7 +35,7 @@ class DropBoxAPI:
         result = subprocess.run([self.DROPBOX_UPLOADER_PATH / 
                                  self.DROPBOX_UPLOADER_SCRIPT,
                                  'mkdir', self.DROPBOX_USERS_DIR], 
-                                 cwd=self.PITALK_HOME, stdout=subprocess.PIPE)
+                                 cwd=self.PITALK_PATH, stdout=subprocess.PIPE)
         print("after create users")
         print(result.stdout.decode('utf-8'))
   
@@ -47,7 +47,7 @@ class DropBoxAPI:
                   self.DROPBOX_PATH / self.DROPBOX_USERS_DIR / user_name]
         print(params)
         result = subprocess.run(params, 
-                                cwd=self.PITALK_HOME, 
+                                cwd=self.PITALK_PATH, 
                                 stdout=subprocess.PIPE)
         print("after upload")
         print(result.stdout.decode('utf-8'))
@@ -58,7 +58,7 @@ class DropBoxAPI:
                                  self.DROPBOX_UPLOADER_SCRIPT,
                                  'download', self.DROPBOX_USERS_DIR, 
                                  self.DROPBOX_PATH / self.DROPBOX_USERS_DIR], 
-                                 cwd=self.PITALK_HOME, stdout=subprocess.PIPE)
+                                 cwd=self.PITALK_PATH, stdout=subprocess.PIPE)
         
         print("after download")
         print(result.stdout.decode('utf-8'))
