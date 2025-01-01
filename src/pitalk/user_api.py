@@ -115,7 +115,7 @@ def create_user(user_name: str, full_name: str, announce_path: Path):
 
     # download for verification
     dropbox_card_path = dropbox_api.download_user(card_file=card_file)
-    with open(dropbox_card_path / f"{user_name}.json", "rt") as f:
+    with open(dropbox_card_path, "rt") as f:
         dropbox_card = FriendCard.model_validate_json(f.read())
 
     print(card.public_key)
