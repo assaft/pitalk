@@ -53,7 +53,7 @@ class DropBoxAPI:
     def download_user(self, card_file:str) -> Path:
         print("before download")
         source_path = self.DROPBOX_USERS_DIR / card_file
-        target_path = self.DROPBOX_PATH / self.DROPBOX_USERS_DIR, 
+        target_path = self.DROPBOX_PATH / self.DROPBOX_USERS_DIR
         result = subprocess.run([self.DROPBOX_UPLOADER_SCRIPT,
                                  'download', source_path, target_path], 
                                  cwd=self.PITALK_PATH, stdout=subprocess.PIPE)
