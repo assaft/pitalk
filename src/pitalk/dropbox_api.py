@@ -42,9 +42,10 @@ class DropBoxAPI:
 
     def upload_user(self, card_path: Path, user_name: str):
         print("before upload")
-        params = [self.DROPBOX_UPLOADER_PATH / self.DROPBOX_UPLOADER_SCRIPT,
+        params = [self.DROPBOX_UPLOADER_PATH / 
+                  self.DROPBOX_UPLOADER_SCRIPT,
                   'upload', card_path, 
-                  self.DROPBOX_PATH / self.DROPBOX_USERS_DIR / user_name]
+                  self.DROPBOX_USERS_DIR / user_name]
         print(params)
         result = subprocess.run(params, 
                                 cwd=self.PITALK_PATH, 
