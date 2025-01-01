@@ -22,7 +22,7 @@ class DropBoxAPI:
 
     DROPBOX_JOBS_LOCAL = DROPBOX_PATH / "jobs"
 
-    DROPBOX_UPLOADER_SCRIPT = "dropbox-uploader.sh"
+    DROPBOX_UPLOADER_SCRIPT = "dropbox_uploader.sh"
 
     # ADD_FRIEND_JOB = DROPBOX_JOBS / "add_friend"
 
