@@ -28,7 +28,7 @@ def main():
         
     print("Creating user...")
 
-    user = user_api.create_user(
+    user_api.create_user(
         user_name=user_name, full_name=full_name,
         announce_path=announce_path)
 

@@ -22,7 +22,7 @@ class DropBoxAPI:
 
     DROPBOX_JOBS_LOCAL = DROPBOX_PATH / "jobs"
 
-    DROPBOX_UPLOADER_SCRIPT = "dropbox_uploader.sh"
+    DROPBOX_UPLOADER_SCRIPT = DROPBOX_UPLOADER_PATH / "dropbox_uploader.sh"
 
     # ADD_FRIEND_JOB = DROPBOX_JOBS / "add_friend"
 
@@ -32,8 +32,7 @@ class DropBoxAPI:
 
     def create_users(self):
         print("before create users")
-        result = subprocess.run([self.DROPBOX_UPLOADER_PATH / 
-                                 self.DROPBOX_UPLOADER_SCRIPT,
+        result = subprocess.run([self.DROPBOX_UPLOADER_SCRIPT,
                                  'mkdir', self.DROPBOX_USERS_DIR], 
                                  cwd=self.PITALK_PATH, stdout=subprocess.PIPE)
         print("after create users")
@@ -42,27 +41,25 @@ class DropBoxAPI:
 
     def upload_user(self, card_path: Path, user_name: str):
         print("before upload")
-        params = [self.DROPBOX_UPLOADER_PATH / 
-                  self.DROPBOX_UPLOADER_SCRIPT,
-                  'upload', card_path, 
-                  self.DROPBOX_USERS_DIR / user_name]
-        print(params)
-        result = subprocess.run(params, 
+        source_path = card_path
+        target_path = self.DROPBOX_USERS_DIR / user_name
+        result = subprocess.run([self.DROPBOX_UPLOADER_SCRIPT,
+                                 'upload', source_path, target_path], 
                                 cwd=self.PITALK_PATH, 
                                 stdout=subprocess.PIPE)
         print("after upload")
         print(result.stdout.decode('utf-8'))
 
-    def download_users(self):
+    def download_user(self, user_name:str) -> Path:
         print("before download")
-        result = subprocess.run([self.DROPBOX_UPLOADER_PATH / 
-                                 self.DROPBOX_UPLOADER_SCRIPT,
-                                 'download', self.DROPBOX_USERS_DIR, 
-                                 self.DROPBOX_PATH / self.DROPBOX_USERS_DIR], 
+        source_path = self.DROPBOX_USERS_DIR / user_name
+        target_path = self.DROPBOX_PATH / self.DROPBOX_USERS_DIR / user_name
+        result = subprocess.run([self.DROPBOX_UPLOADER_SCRIPT,
+                                 'download', source_path, target_path], 
                                  cwd=self.PITALK_PATH, stdout=subprocess.PIPE)
-        
         print("after download")
         print(result.stdout.decode('utf-8'))
+        return target_path
 
     def create_user(self, user_name: str):
         job_id = uuid4()
